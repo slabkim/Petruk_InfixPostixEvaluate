@@ -17,7 +17,7 @@ int Precedence(char op){
     return 0;
 }
 
-vector<string> stringToInfix(string str){
+vector<string> strToInfix(string str){
     vector<string> infix;
     string angka;
 
@@ -113,7 +113,7 @@ int main(){
     string infix;
     getline(cin, infix);
 
-    vector<string> Parsingtoinfix = stringToInfix(infix);
+    vector<string> Parsingtoinfix = strToInfix(infix);
     cout << "infix: ";
     printElemen(Parsingtoinfix);
 
@@ -123,6 +123,6 @@ int main(){
 
     float Evaluate = evaluatePostfix(InfixtoPostfix);
     cout << "hasil: "<<Evaluate << endl;
-    
+
     return 0;
 }
