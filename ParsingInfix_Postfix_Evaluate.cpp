@@ -18,7 +18,7 @@ int Precedence(char op){
 }
 
 vector<string> strToInfix(string str){
-    vector<string> infix;
+    vector<string> elemens;
     string angka;
 
         for (size_t i = 0; i< str.size(); i++){
@@ -28,25 +28,31 @@ vector<string> strToInfix(string str){
                 continue;
             }else if(isdigit(ch) || ch == '.'){
                 angka += ch;
-            }else if(ch == '-' && (i == 0 || isOperator(str[i-1]))){
-                if(isOperator(str[i-1]) || str[i+1] == '('){
-                    infix.push_back("-1");
-                    infix.push_back("*");
-                }else{
-                    angka += ch;
+            }else if(ch == '-' && (i == 0 || isOperator(str[i-1]) || str[i-1] == '(')){
+                angka += ch;
+            }else if(ch == '-' && (i == 0 || isOperator(str[i-1]) || str[i-1] == '(')){
+                angka += ch;
+            }else{
+                if (!angka.empty()){
+                    elemens.push_back(angka);
+                    angka.clear();
                 }
-            }else {
-                if(!angka.empty()){
-                infix.push_back(angka);
-                angka.clear();
+                elemens.push_back(string(1, ch));
             }
-            infix.push_back(string(1, ch));
         }
-    }
-    if(!angka.empty()){
-        infix.push_back(angka);
-    }
-    return infix;
+        if (!angka.empty()){
+            elemens.push_back(angka);
+        }
+        vector<string> prosesElement;
+        for(size_t i = 0; i < elemens.size(); i++){
+            if(elemens[i] == "-" && (i == 0 || (isOperator(elemens[i-1][0]) && elemens[i-1].size() == 1) || elemens[i-1] == "(")){
+                prosesElement.push_back("-1");
+                prosesElement.push_back("*");
+            }else{
+                prosesElement.push_back(elemens[i]);
+            }
+        }
+        return prosesElement;
 }
 
 vector<string> infixToPostfix(const vector<string>& infix){
@@ -54,7 +60,7 @@ vector<string> infixToPostfix(const vector<string>& infix){
     stack<string> ops;
 
     for(const string& token : infix){
-        if(isdigit(token[0]) || token[0] == '.' || (token.size()>1 && (isdigit(token[1]) || token[1] == '.'))){
+        if(isdigit(token[0]) || (token.size() > 1 && isdigit(token[1]))){
             postfix.push_back(token);
         }else if(token == "("){
             ops.push(token);
@@ -79,22 +85,22 @@ vector<string> infixToPostfix(const vector<string>& infix){
     return postfix;
 }
 
-float evaluatePostfix(const vector<string>& postfix) {
-    stack<float> values;
+double evaluatePostfix(const vector<string>& postfix) {
+    stack<double> values;
     for(const string& token : postfix) {
-        if(isdigit(token[0]) || token[0] == '.' || (token.size() > 1 && (isdigit(token[1]) || token[1] == '.'))) {
-        values.push(stof(token));
+        if(isdigit(token[0]) ||(token.size() > 1 && isdigit(token[1]))) {
+        values.push(stoi(token));
         }else if(isOperator(token[0])) {
-        float b = values.top(); values.pop();
-        float a = values.top(); values.pop();
-        float result = 0;
+        double b = values.top(); values.pop();
+        double a = values.top(); values.pop();
+        double result = 0;
 
         switch (token[0]) {
             case '+': result = a + b; break;
             case '-': result = a - b; break;
             case '*': result = a * b; break;
             case '/': result = a / b; break;
-            case '%': result = fmod(a,b); break;
+            case '%': result = (int) a % (int) b; break;
             }
             values.push(result);
         }
